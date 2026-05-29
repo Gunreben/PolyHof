@@ -46,7 +46,8 @@ class DebugInput:
         if idx is not None and idx < len(players):
             players[idx].add_movement(config.DEBUG_INCREMENT)
 
-    def update(self, players: List[Player]) -> None:  # nothing polled per frame
+    def update(self, players: List[Player], accumulate: bool = True) -> None:
+        # Debug movement arrives via key events; nothing to poll per frame.
         pass
 
     @property

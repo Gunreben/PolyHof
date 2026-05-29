@@ -52,7 +52,7 @@ PLAYER_SPRITE_HEIGHT_FRAC = 0.42
 # --------------------------------------------------------------------------- #
 # Total accumulated hip movement (in the abstract unit produced by the active
 # input source) required to travel from start_pos to end_pos. Same for everyone.
-TARGET_MOVEMENT = 100.0
+TARGET_MOVEMENT = 500.0
 
 # How much a single debug key press (1/2/3/4) contributes towards the target.
 DEBUG_INCREMENT = 1.5

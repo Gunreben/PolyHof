@@ -15,6 +15,10 @@ import config
 
 
 class State:
+    # When True, the active input source feeds hip movement into players this
+    # frame. Only the race counts; other states still track/visualise bodies.
+    accumulate_movement = False
+
     def __init__(self, game) -> None:
         self.game = game
 
@@ -92,6 +96,12 @@ class TitleState(State):
             )
             surface.blit(prompt, (cx - prompt.get_width() // 2, int(surface.get_height() * 0.82)))
 
+        # Live tracking overlay so players can see they are detected before the
+        # race even starts.
+        self.game.skeleton_view.draw(
+            surface, self.game.source.get_skeletons(), self.game.source.tracked_count
+        )
+
 
 # --------------------------------------------------------------------------- #
 # COUNTDOWN
@@ -129,6 +139,8 @@ class CountdownState(State):
 # RACE
 # --------------------------------------------------------------------------- #
 class RaceState(State):
+    accumulate_movement = True
+
     def enter(self) -> None:
         self._finish_counter = 0
 
@@ -137,7 +149,6 @@ class RaceState(State):
         self.game.source.process_event(event, self.game.players)
 
     def update(self, dt: float) -> None:
-        self.game.source.update(self.game.players)
         for p in self.game.players:
             if not p.finished and p.progress >= 1.0:
                 p.finished = True

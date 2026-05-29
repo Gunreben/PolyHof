@@ -91,7 +91,10 @@ class KinectInput:
         # Kinect is polled, not event driven.
         pass
 
-    def update(self, players: List[Player]) -> None:
+    def update(self, players: List[Player], accumulate: bool = True) -> None:
+        # Always poll the sensor so the tracking count and skeleton overlay stay
+        # live in every game state; only feed movement into players when
+        # ``accumulate`` is True (i.e. during the actual race).
         if not self.available or self._kinect is None:
             return
         if not self._kinect.has_new_body_frame():
@@ -117,13 +120,8 @@ class KinectInput:
         for lane, (tid, spine_xyz, body) in enumerate(tracked_bodies):
             live_ids.add(tid)
             assigned_player = lane if lane < len(players) else None
-
-            if assigned_player is not None:
-                self._accumulate(tid, spine_xyz, players[assigned_player])
-            else:
-                # keep history fresh even for unassigned bodies
-                self._prev[tid] = spine_xyz
-
+            player = players[assigned_player] if assigned_player is not None else None
+            self._track(tid, spine_xyz, player, accumulate)
             self._skeletons.append(
                 self._build_skeleton(body, assigned_player)
             )
@@ -133,12 +131,18 @@ class KinectInput:
             if tid not in live_ids:
                 del self._prev[tid]
 
-    def _accumulate(
-        self, tid: int, spine_xyz: Tuple[float, float, float], player: Player
+    def _track(
+        self,
+        tid: int,
+        spine_xyz: Tuple[float, float, float],
+        player: Optional[Player],
+        accumulate: bool,
     ) -> None:
         prev = self._prev.get(tid)
+        # Always keep history fresh so race movement is continuous from the
+        # moment the race starts (no big first-frame jump).
         self._prev[tid] = spine_xyz
-        if prev is None:
+        if prev is None or player is None or not accumulate:
             return
 
         w = config.MOTION_AXIS_WEIGHTS

@@ -52,6 +52,12 @@ class Game:
                 if not self.running:
                     break
                 self.assets.recompute_layout(self.screen.get_size())
+                # Poll tracking every frame in every state so the skeleton
+                # overlay and "players tracked" count stay live; only the race
+                # state lets that motion advance the horses.
+                self.source.update(
+                    self.players, accumulate=self.state.accumulate_movement
+                )
                 self.state.update(dt)
                 self.state.draw(self.screen)
                 pygame.display.flip()
