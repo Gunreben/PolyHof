@@ -1,0 +1,13 @@
+# PolyHof - Butt Race dependencies
+#
+# Core game (works on any OS, supports the --editor and --debug modes).
+# pygame-ce is a drop-in replacement for pygame with up-to-date wheels
+# (including Python 3.13/3.14). It is imported as `pygame`.
+pygame-ce>=2.5
+numpy>=1.21
+
+# Kinect v2 support (Windows only; requires the Kinect for Windows SDK 2.0).
+# Install these only on the machine with the sensor. See README for the small
+# source patches PyKinect2 needs on Python 3.8+.
+pykinect2>=0.1.0 ; sys_platform == "win32"
+comtypes>=1.1.7 ; sys_platform == "win32"
