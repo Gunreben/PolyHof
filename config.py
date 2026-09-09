@@ -12,9 +12,39 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parent
 IMAGES_DIR = ROOT_DIR / "images"
 DATA_DIR = ROOT_DIR / "data"
-POSITIONS_FILE = DATA_DIR / "positions.json"
+POSITIONS_FILE = DATA_DIR / "positions_1.json"
 
-BACKGROUND_IMAGE = IMAGES_DIR / "Background_1.png"
+NUM_LEVELS = 4
+
+# Per-level background images and their native pixel sizes.
+LEVEL_BACKGROUNDS = [
+    IMAGES_DIR / "Background_1.png",
+    IMAGES_DIR / "Background_2.jpg",
+    IMAGES_DIR / "Background_3.jpg",
+    IMAGES_DIR / "Background_4.jpg",
+]
+LEVEL_BACKGROUND_SIZES = [
+    (4096, 1140),
+    (3904, 1087),
+    (3904, 1087),
+    (3904, 1087),
+]
+
+# Active level (0-indexed). Set at startup from --level argument.
+CURRENT_LEVEL = 0
+
+# Convenience accessors (updated by set_level()).
+BACKGROUND_IMAGE = LEVEL_BACKGROUNDS[0]
+BACKGROUND_SIZE = LEVEL_BACKGROUND_SIZES[0]
+
+def set_level(level: int) -> None:
+    """Set the active level (0-indexed) and update dependent globals."""
+    global CURRENT_LEVEL, BACKGROUND_IMAGE, BACKGROUND_SIZE, POSITIONS_FILE
+    CURRENT_LEVEL = level
+    BACKGROUND_IMAGE = LEVEL_BACKGROUNDS[level]
+    BACKGROUND_SIZE = LEVEL_BACKGROUND_SIZES[level]
+    POSITIONS_FILE = DATA_DIR / f"positions_{level + 1}.json"
+
 # Player 4 ships with an uppercase extension; keep the exact names here.
 PLAYER_IMAGES = [
     IMAGES_DIR / "Player_1.png",
@@ -24,13 +54,6 @@ PLAYER_IMAGES = [
 ]
 
 NUM_PLAYERS = 4
-
-# --------------------------------------------------------------------------- #
-# Background / coordinate space
-# --------------------------------------------------------------------------- #
-# Native size of the background art. All saved positions are expressed in this
-# coordinate space so they are independent of the runtime window resolution.
-BACKGROUND_SIZE = (4096, 1140)
 
 # --------------------------------------------------------------------------- #
 # Display

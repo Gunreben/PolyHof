@@ -47,7 +47,13 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="PolyHof - Butt Race")
     parser.add_argument("--editor", action="store_true", help="run the position editor")
     parser.add_argument("--debug", action="store_true", help="force keyboard debug input")
+    parser.add_argument(
+        "--level", type=int, default=1, choices=range(1, config.NUM_LEVELS + 1),
+        help="level / background to use (1-%(choices)s, default: 1)",
+    )
     args = parser.parse_args(argv)
+
+    config.set_level(args.level - 1)
 
     pygame.init()
     pygame.display.set_caption("PolyHof - Butt Race")
