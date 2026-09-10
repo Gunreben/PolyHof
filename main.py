@@ -21,6 +21,10 @@ from game.assets import Assets
 def _create_screen() -> pygame.Surface:
     flags = pygame.RESIZABLE
     if config.START_FULLSCREEN:
+        if config.FULLSCREEN_SIZE:
+            import os
+            os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
+            return pygame.display.set_mode(config.FULLSCREEN_SIZE, pygame.NOFRAME)
         return pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     return pygame.display.set_mode(config.WINDOW_SIZE, flags)
 

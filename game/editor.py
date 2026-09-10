@@ -148,7 +148,12 @@ class Editor:
     def _toggle_fullscreen(self) -> None:
         self.fullscreen = not self.fullscreen
         if self.fullscreen:
-            self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+            if config.FULLSCREEN_SIZE:
+                import os
+                os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
+                self.screen = pygame.display.set_mode(config.FULLSCREEN_SIZE, pygame.NOFRAME)
+            else:
+                self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         else:
             self.screen = pygame.display.set_mode(config.WINDOW_SIZE, pygame.RESIZABLE)
 

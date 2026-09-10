@@ -62,6 +62,9 @@ NUM_PLAYERS = 4
 # image is letterboxed inside whatever window/monitor we render to.
 WINDOW_SIZE = (1280, 357)
 START_FULLSCREEN = True
+# When fullscreen, use a borderless window at this exact size instead of
+# taking over the entire monitor.  Set to None for true fullscreen.
+FULLSCREEN_SIZE = (3840, 1080)
 FPS = 60
 BACKGROUND_LETTERBOX_COLOR = (12, 10, 14)
 
