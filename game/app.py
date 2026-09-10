@@ -34,6 +34,14 @@ class Game:
         self.state.enter()
 
     # ------------------------------------------------------------------ #
+    def advance_level(self) -> None:
+        """Switch to the next level (cycling), reload background and positions."""
+        next_level = (config.CURRENT_LEVEL + 1) % config.NUM_LEVELS
+        config.set_level(next_level)
+        self.assets.reload_background()
+        self.players = load_players()
+
+    # ------------------------------------------------------------------ #
     def set_state(self, state: State) -> None:
         self.state = state
         self.state.enter()

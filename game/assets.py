@@ -38,6 +38,19 @@ class Assets:
         self.player_scaled: list[pygame.Surface] = []
 
     # ------------------------------------------------------------------ #
+    # Level switching
+    # ------------------------------------------------------------------ #
+    def reload_background(self) -> None:
+        """Reload the background image and native size from the current config level."""
+        self.background_raw = pygame.image.load(
+            str(config.BACKGROUND_IMAGE)
+        ).convert()
+        self.bg_native_w, self.bg_native_h = config.BACKGROUND_SIZE
+        # Force recompute on next frame.
+        self._window_size = (0, 0)
+        self.background_scaled = None
+
+    # ------------------------------------------------------------------ #
     # Layout
     # ------------------------------------------------------------------ #
     def recompute_layout(self, window_size: Tuple[int, int]) -> None:

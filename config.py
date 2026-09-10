@@ -61,7 +61,7 @@ NUM_PLAYERS = 4
 # Default windowed size. The background aspect (~3.59:1) is preserved and the
 # image is letterboxed inside whatever window/monitor we render to.
 WINDOW_SIZE = (1280, 357)
-START_FULLSCREEN = False
+START_FULLSCREEN = True
 FPS = 60
 BACKGROUND_LETTERBOX_COLOR = (12, 10, 14)
 
@@ -78,7 +78,10 @@ PLAYER_SPRITE_HEIGHT_FRAC = 0.42
 TARGET_MOVEMENT = 500.0
 
 # How much a single debug key press (1/2/3/4) contributes towards the target.
-DEBUG_INCREMENT = 1.5
+DEBUG_INCREMENT = 72.0
+
+# Seconds to show the winner screen before auto-advancing to the next level.
+WINNER_DISPLAY_TIME = 10.0
 
 # --------------------------------------------------------------------------- #
 # Kinect motion analysis

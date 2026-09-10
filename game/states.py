@@ -172,12 +172,18 @@ class FinishState(State):
             self.game.players, key=lambda p: p.progress
         )
 
+    def _next_round(self) -> None:
+        self.game.advance_level()
+        self.game.set_state(TitleState(self.game))
+
     def handle_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-            self.game.set_state(TitleState(self.game))
+            self._next_round()
 
     def update(self, dt: float) -> None:
         self.t += dt
+        if self.t >= config.WINNER_DISPLAY_TIME:
+            self._next_round()
 
     def draw(self, surface: pygame.Surface) -> None:
         self.game.draw_race_scene(surface, show_progress=True)
@@ -192,7 +198,11 @@ class FinishState(State):
         glyph = pygame.transform.rotozoom(glyph, 0, pulse)
         surface.blit(glyph, (cx - glyph.get_width() // 2, int(surface.get_height() * 0.30)))
 
+        # Countdown to next level.
+        remaining = max(0, config.WINNER_DISPLAY_TIME - self.t)
+        next_level = (config.CURRENT_LEVEL + 1) % config.NUM_LEVELS + 1
         prompt = self.game.fonts["medium"].render(
-            "SPACE to race again   -   Esc to quit", True, (255, 255, 255)
+            f"Next track in {remaining:.0f}s  |  SPACE to skip  |  Esc to quit",
+            True, (255, 255, 255),
         )
         surface.blit(prompt, (cx - prompt.get_width() // 2, int(surface.get_height() * 0.72)))
