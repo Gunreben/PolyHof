@@ -72,16 +72,40 @@ class Assets:
         )
 
         # Rescale each player sprite to a fraction of the track height while
-        # preserving its own aspect ratio.
+        # preserving its own aspect ratio, then bake a coloured outline version.
         target_h = int(round(self.bg_native_h * config.PLAYER_SPRITE_HEIGHT_FRAC * scale))
         target_h = max(1, target_h)
+        outline_px = max(1, int(round(target_h * 0.015)))
         self.player_scaled = []
-        for surf in self.player_raw:
+        for i, surf in enumerate(self.player_raw):
             ratio = surf.get_width() / surf.get_height()
             w = max(1, int(round(target_h * ratio)))
+            scaled = pygame.transform.smoothscale(surf, (w, target_h))
             self.player_scaled.append(
-                pygame.transform.smoothscale(surf, (w, target_h))
+                self._make_outlined(scaled, config.PLAYER_COLORS[i], outline_px)
             )
+
+    @staticmethod
+    def _make_outlined(sprite: pygame.Surface, color: Tuple[int, ...], thickness: int) -> pygame.Surface:
+        """Return a new surface with *sprite* drawn over a coloured outline."""
+        w, h = sprite.get_size()
+        pad = thickness
+        out = pygame.Surface((w + pad * 2, h + pad * 2), pygame.SRCALPHA)
+
+        # Build a solid-colour silhouette of the sprite.
+        silhouette = sprite.copy()
+        silhouette.fill((*color[:3], 255), special_flags=pygame.BLEND_RGBA_MIN)
+        silhouette.fill((*color[:3], 0), special_flags=pygame.BLEND_RGBA_MAX)
+
+        # Stamp the silhouette at offsets around the centre to form the outline.
+        for dx in range(-thickness, thickness + 1):
+            for dy in range(-thickness, thickness + 1):
+                if dx * dx + dy * dy <= thickness * thickness:
+                    out.blit(silhouette, (pad + dx, pad + dy))
+
+        # Draw the original sprite on top.
+        out.blit(sprite, (pad, pad))
+        return out
 
     # ------------------------------------------------------------------ #
     # Coordinate transforms
