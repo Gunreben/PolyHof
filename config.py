@@ -61,12 +61,15 @@ NUM_PLAYERS = 4
 # Default windowed size. The background aspect (~3.59:1) is preserved and the
 # image is letterboxed inside whatever window/monitor we render to.
 WINDOW_SIZE = (1280, 357)
-START_FULLSCREEN = True
+START_FULLSCREEN = False
 # When fullscreen, use a borderless window at this exact size instead of
 # taking over the entire monitor.  Set to None for true fullscreen.
 FULLSCREEN_SIZE = (3840, 1080)
 FPS = 60
 BACKGROUND_LETTERBOX_COLOR = (12, 10, 14)
+
+# Manual mode: disable all auto-timers; require SPACE / left-click to advance.
+MANUAL_MODE = False
 
 # Visual scale of the player sprites relative to the background height.
 # 1.0 would draw a sprite as tall as the whole background; the horses should be
@@ -78,7 +81,7 @@ PLAYER_SPRITE_HEIGHT_FRAC = 0.42
 # --------------------------------------------------------------------------- #
 # Total accumulated hip movement (in the abstract unit produced by the active
 # input source) required to travel from start_pos to end_pos. Same for everyone.
-TARGET_MOVEMENT = 500.0
+TARGET_MOVEMENT = 1000.0
 
 # How much a single debug key press (1/2/3/4) contributes towards the target.
 DEBUG_INCREMENT = 72.0

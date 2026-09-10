@@ -47,16 +47,23 @@ class TitleState(State):
         for p in self.game.players:
             p.reset()
 
+    def _start(self) -> None:
+        self.game.set_state(CountdownState(self.game))
+
     def handle_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-            self.game.set_state(CountdownState(self.game))
+            self._start()
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self._start()
 
     def update(self, dt: float) -> None:
         self.t += dt
+        if config.MANUAL_MODE:
+            return
         if self.game.source.tracked_count >= config.NUM_PLAYERS:
             self.all_tracked_for += dt
             if self.all_tracked_for >= self.AUTO_START_HOLD:
-                self.game.set_state(CountdownState(self.game))
+                self._start()
         else:
             self.all_tracked_for = 0.0
 
@@ -90,7 +97,7 @@ class TitleState(State):
         )
         surface.blit(status, (cx - status.get_width() // 2, int(surface.get_height() * 0.68)))
 
-        if (self.t * 2) % 2 < 1.4:  # blinking prompt
+        if not config.MANUAL_MODE and (self.t * 2) % 2 < 1.4:  # blinking prompt
             prompt = self.game.fonts["medium"].render(
                 "Press SPACE to start", True, (255, 255, 255)
             )
@@ -179,10 +186,12 @@ class FinishState(State):
     def handle_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             self._next_round()
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self._next_round()
 
     def update(self, dt: float) -> None:
         self.t += dt
-        if self.t >= config.WINNER_DISPLAY_TIME:
+        if not config.MANUAL_MODE and self.t >= config.WINNER_DISPLAY_TIME:
             self._next_round()
 
     def draw(self, surface: pygame.Surface) -> None:
@@ -199,10 +208,9 @@ class FinishState(State):
         surface.blit(glyph, (cx - glyph.get_width() // 2, int(surface.get_height() * 0.30)))
 
         # Countdown to next level.
-        remaining = max(0, config.WINNER_DISPLAY_TIME - self.t)
         next_level = (config.CURRENT_LEVEL + 1) % config.NUM_LEVELS + 1
-        prompt = self.game.fonts["medium"].render(
-            f"Next track in {remaining:.0f}s  |  SPACE to skip  |  Esc to quit",
-            True, (255, 255, 255),
-        )
-        surface.blit(prompt, (cx - prompt.get_width() // 2, int(surface.get_height() * 0.72)))
+        if not config.MANUAL_MODE:
+            remaining = max(0, config.WINNER_DISPLAY_TIME - self.t)
+            prompt_text = f"Next track in {remaining:.0f}s  |  SPACE to skip  |  Esc to quit"
+            prompt = self.game.fonts["medium"].render(prompt_text, True, (255, 255, 255))
+            surface.blit(prompt, (cx - prompt.get_width() // 2, int(surface.get_height() * 0.72)))
